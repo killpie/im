@@ -1,8 +1,14 @@
-package transferProtocol;
+package protocol;
 
-import com.alibaba.fastjson.serializer.JSONSerializer;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
+import protocol.command.Command;
+import protocol.request.LoginRequestPacket;
+import protocol.request.MessageRequestPacket;
+import protocol.response.LoginResponsePacket;
+import protocol.response.MessageResponsePacket;
+import serialize.Serializer;
+import serialize.impl.JSONSerializerAlgorithm;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,9 +22,16 @@ public class PacketCodeC {
     private static final Map<Byte, Class<? extends Packet>> packetTypeMap;
     private static final Map<Byte, Serializer> serializerMap;
 
+    //单例模式
+    public static final PacketCodeC INSTANCE ;
+
     static {
+        INSTANCE = new PacketCodeC();
         packetTypeMap = new HashMap<Byte, Class<? extends Packet>>();
         packetTypeMap.put(Command.LOGIN_REQUEST, LoginRequestPacket.class);
+        packetTypeMap.put(Command.LOGIN_RESPONSE, LoginResponsePacket.class);
+        packetTypeMap.put(Command.MESSAGE_REQUEST, MessageRequestPacket.class);
+        packetTypeMap.put(Command.MESSAGE_RESPONSE, MessageResponsePacket.class);
 
         serializerMap = new HashMap<Byte, Serializer>();
         Serializer serializer = new JSONSerializerAlgorithm();
@@ -27,6 +40,23 @@ public class PacketCodeC {
 
     public ByteBuf encode(Packet packet){
         ByteBuf byteBuf = ByteBufAllocator.DEFAULT.ioBuffer();
+
+        //序列化java对象
+        byte[] bytes = Serializer.DEFAULT.serialize(packet);
+
+        //开始编码
+        byteBuf.writeInt(MAGIC_NUMBER);
+        byteBuf.writeByte(packet.getVersion());
+        byteBuf.writeByte(Serializer.DEFAULT.getSerializerAlgorithm());
+        byteBuf.writeByte(packet.getCommand());
+        byteBuf.writeInt(bytes.length);
+        byteBuf.writeBytes(bytes);
+
+        return byteBuf;
+    }
+
+    public ByteBuf encode(ByteBufAllocator allocator, Packet packet){
+        ByteBuf byteBuf = allocator.ioBuffer();
 
         //序列化java对象
         byte[] bytes = Serializer.DEFAULT.serialize(packet);

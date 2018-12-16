@@ -1,4 +1,4 @@
-package transferProtocol;
+package protocol;
 
 
 import lombok.Data;

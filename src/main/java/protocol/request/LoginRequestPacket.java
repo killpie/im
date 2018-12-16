@@ -1,6 +1,8 @@
-package transferProtocol;
+package protocol.request;
 
 import lombok.Data;
+import protocol.command.Command;
+import protocol.Packet;
 
 /**
  * @author dingzhaolei

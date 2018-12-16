@@ -1,4 +1,4 @@
-package transferProtocol;
+package serialize;
 
 /**
  * @author dingzhaolei

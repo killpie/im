@@ -1,4 +1,6 @@
-package transferProtocol;
+package serialize;
+
+import serialize.impl.JSONSerializerAlgorithm;
 
 /**
  * @author dingzhaolei
