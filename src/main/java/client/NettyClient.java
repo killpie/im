@@ -1,5 +1,8 @@
 package client;
 
+import client.handler.FirstClientHandler;
+import client.handler.LoginResponseHandler;
+import client.handler.MessageResponseHandler;
 import handler.ClientHandler;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;
@@ -9,6 +12,7 @@ import io.netty.channel.ChannelInitializer;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
 import io.netty.util.AttributeKey;
@@ -18,6 +22,8 @@ import io.netty.util.internal.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import protocol.PacketCodeC;
+import protocol.codec.PacketCodec;
+import protocol.codec.Spliter;
 import protocol.request.MessageRequestPacket;
 import util.LoginUtil;
 
@@ -39,7 +45,11 @@ public class NettyClient {
                 .handler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     protected void initChannel(SocketChannel ch){
-                        ch.pipeline().addLast(new ClientHandler());
+                        ch.pipeline().addLast(new Spliter());
+             //           ch.pipeline().addLast(new FirstClientHandler());
+                        ch.pipeline().addLast(new PacketCodec());
+                        ch.pipeline().addLast(new LoginResponseHandler());
+                        ch.pipeline().addLast(new MessageResponseHandler());
                     }
                 });
 
@@ -70,7 +80,7 @@ public class NettyClient {
 
         new Thread(()->{
            while (!Thread.interrupted()){
-               logger.info("开始启动,线程中断状态{}，登录状态{}",Thread.interrupted(),LoginUtil.hasLogin(channel));
+               //logger.info("开始启动,线程中断状态{}，登录状态{}",Thread.interrupted(),LoginUtil.hasLogin(channel));
                if (LoginUtil.hasLogin(channel)){
                    logger.info("输入消息发送至服务端");
                    MessageRequestPacket packet = new MessageRequestPacket();

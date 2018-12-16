@@ -1,9 +1,10 @@
-package client;
+package client.handler;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandler;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import protocol.request.MessageRequestPacket;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
@@ -13,11 +14,14 @@ import java.util.Date;
 public class FirstClientHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelActive(ChannelHandlerContext channelHandlerContext) throws Exception {
-        System.out.println(new SimpleDateFormat().format(new Date())+"客户端写出数据");
-        //1. 获取数据
-        ByteBuf byteBuf = getByteBuf(channelHandlerContext);
 
-        channelHandlerContext.channel().writeAndFlush(byteBuf);
+        for (int i = 0; i < 100; i++) {
+            //1. 获取数据
+            MessageRequestPacket messageRequestPacket = new MessageRequestPacket();
+            messageRequestPacket.setMessage("你好，年华->"+i);
+            channelHandlerContext.channel().writeAndFlush(messageRequestPacket);
+        }
+
     }
 
     private ByteBuf getByteBuf(ChannelHandlerContext ctx){

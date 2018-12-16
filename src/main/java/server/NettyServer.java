@@ -1,19 +1,20 @@
 package server;
 
-import handler.ServerHandler;
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInitializer;
-import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.handler.codec.string.StringDecoder;
+import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import pipeline.*;
+import protocol.codec.PacketCodec;
+import protocol.codec.Spliter;
+import server.handler.FirstServerHandler;
+import server.handler.LoginRequestHandler;
+import server.handler.MessageRequestHandler;
 
 public class NettyServer {
     private static final Logger logger = LoggerFactory.getLogger(NettyServer.class);
@@ -29,19 +30,11 @@ public class NettyServer {
                 .childHandler(new ChannelInitializer<NioSocketChannel>() {
                     @Override
                     protected void initChannel(NioSocketChannel ch){
-
-
-                        // inBound，处理读数据的逻辑链
-                        ch.pipeline().addLast(new ChannelInboundHandlerA());
-                        ch.pipeline().addLast(new ChannelInboundHandlerB());
-                        ch.pipeline().addLast(new ChannelInboundHandlerC());
-
-                        ch.pipeline().addLast(new ServerHandler());
-
-                        // outBound，处理写数据的逻辑链
-                        ch.pipeline().addLast(new ChannelOutboundHandlerA());
-                        ch.pipeline().addLast(new ChannelOutboundHandlerB());
-                        ch.pipeline().addLast(new ChannelOutboundHandlerC());
+                        ch.pipeline().addLast(new Spliter());
+                    //    ch.pipeline().addLast(new FirstServerHandler());
+                        ch.pipeline().addLast(new PacketCodec());
+                        ch.pipeline().addLast(new LoginRequestHandler());
+                        ch.pipeline().addLast(new MessageRequestHandler());
                     }
                 })
                 .bind(8000)

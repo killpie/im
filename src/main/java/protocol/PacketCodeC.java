@@ -18,7 +18,7 @@ import java.util.Map;
  * @date 2018/12/14 18:29
  **/
 public class PacketCodeC {
-    private static final int MAGIC_NUMBER = 0x123456;
+    public static final int MAGIC_NUMBER = 0x123456;
     private static final Map<Byte, Class<? extends Packet>> packetTypeMap;
     private static final Map<Byte, Serializer> serializerMap;
 
@@ -57,6 +57,22 @@ public class PacketCodeC {
 
     public ByteBuf encode(ByteBufAllocator allocator, Packet packet){
         ByteBuf byteBuf = allocator.ioBuffer();
+
+        //序列化java对象
+        byte[] bytes = Serializer.DEFAULT.serialize(packet);
+
+        //开始编码
+        byteBuf.writeInt(MAGIC_NUMBER);
+        byteBuf.writeByte(packet.getVersion());
+        byteBuf.writeByte(Serializer.DEFAULT.getSerializerAlgorithm());
+        byteBuf.writeByte(packet.getCommand());
+        byteBuf.writeInt(bytes.length);
+        byteBuf.writeBytes(bytes);
+
+        return byteBuf;
+    }
+
+    public ByteBuf encode(ByteBuf byteBuf, Packet packet){
 
         //序列化java对象
         byte[] bytes = Serializer.DEFAULT.serialize(packet);
