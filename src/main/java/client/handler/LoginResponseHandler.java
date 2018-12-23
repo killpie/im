@@ -6,10 +6,12 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import protocol.PacketCodeC;
+import protocol.domain.Session;
 import protocol.request.LoginRequestPacket;
 import protocol.response.LoginResponsePacket;
 import util.DateUtil;
 import util.LoginUtil;
+import util.SessionUtil;
 
 import java.util.UUID;
 
@@ -21,26 +23,22 @@ public class LoginResponseHandler extends SimpleChannelInboundHandler<LoginRespo
 
     private static final Logger logger = LoggerFactory.getLogger(LoginResponseHandler.class);
 
-    public void channelActive(ChannelHandlerContext ctx) throws Exception{
-        logger.info("用户开始登录:{}", DateUtil.getDateTime());
-        //创建登录对象
-        LoginRequestPacket packet = new LoginRequestPacket();
-        packet.setUserId(UUID.randomUUID().toString());
-        packet.setUserName("dzl");
-        packet.setPassword("root");
-
-        //写数据
-        ctx.channel().writeAndFlush(packet);
-
+    @Override
+    public void channelInactive(ChannelHandlerContext ctx) throws Exception{
+        logger.info("客户端连接被关闭channelId:{}", ctx.channel().id());
     }
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, LoginResponsePacket msg) throws Exception{
+        String userId = msg.getUserId();
+        String userName = msg.getUserName();
+
         if (msg.isSuccess()){
-            LoginUtil.maskAsLogin(ctx.channel());
-            logger.info("登录成功");
+            SessionUtil.bindSession(new Session(userId, userName), ctx.channel());
+            logger.info("用户:{} 登录成功 userId:{}",userName, userId);
         }else {
-            logger.info("登录失败");
+            SessionUtil.unBindSession(ctx.channel());
+            logger.info("用户:{} 登录成功 userId:{}",userName, userId);
         }
     }
 }

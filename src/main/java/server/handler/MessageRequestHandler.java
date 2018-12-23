@@ -1,11 +1,16 @@
 package server.handler;
 
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import protocol.domain.Session;
 import protocol.request.MessageRequestPacket;
 import protocol.response.MessageResponsePacket;
+import util.SessionUtil;
+
+import java.text.Format;
 
 /**
  * @author killpie
@@ -19,7 +24,16 @@ public class MessageRequestHandler extends SimpleChannelInboundHandler<MessageRe
     protected void channelRead0(ChannelHandlerContext ctx, MessageRequestPacket msg) throws Exception{
         logger.info("客户端发送的消息:{}",msg);
         MessageResponsePacket messageResponsePacket = new MessageResponsePacket();
-        messageResponsePacket.setMessage("就不！就不！就不！");
-        ctx.channel().writeAndFlush(messageResponsePacket);
+        String fromUserId = msg.getFromUserId();
+        messageResponsePacket.setMessage(String.format("谢谢 userId:%s 给我发送的message:%s", fromUserId, msg.getMessage()));
+
+        String toUserId = msg.getToUserId();
+        Channel channel = SessionUtil.getChannel(toUserId);
+
+        if (channel != null && SessionUtil.hasLogin(channel)){
+            channel.writeAndFlush(messageResponsePacket);
+        }else {
+            logger.info("userId:{} 不在线", toUserId);
+        }
     }
 }

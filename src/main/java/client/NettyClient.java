@@ -24,8 +24,10 @@ import org.slf4j.LoggerFactory;
 import protocol.PacketCodeC;
 import protocol.codec.PacketCodec;
 import protocol.codec.Spliter;
+import protocol.request.LoginRequestPacket;
 import protocol.request.MessageRequestPacket;
 import util.LoginUtil;
+import util.SessionUtil;
 
 import java.util.Date;
 import java.util.Scanner;
@@ -46,7 +48,6 @@ public class NettyClient {
                     @Override
                     protected void initChannel(SocketChannel ch){
                         ch.pipeline().addLast(new Spliter());
-             //           ch.pipeline().addLast(new FirstClientHandler());
                         ch.pipeline().addLast(new PacketCodec());
                         ch.pipeline().addLast(new LoginResponseHandler());
                         ch.pipeline().addLast(new MessageResponseHandler());
@@ -77,25 +78,42 @@ public class NettyClient {
     }
 
     private static void startConsoleThread(Channel channel){
-
+        Scanner scanner = new Scanner(System.in);
         new Thread(()->{
            while (!Thread.interrupted()){
-               //logger.info("开始启动,线程中断状态{}，登录状态{}",Thread.interrupted(),LoginUtil.hasLogin(channel));
-               if (LoginUtil.hasLogin(channel)){
-                   logger.info("输入消息发送至服务端");
-                   MessageRequestPacket packet = new MessageRequestPacket();
-                   Scanner scanner = new Scanner(System.in);
+               logger.info("开始启动,线程中断状态{}，登录状态{}",Thread.interrupted(),LoginUtil.hasLogin(channel));
+               if (!SessionUtil.hasLogin(channel)){
+                   logger.info("输入用户名登录：");
+                   LoginRequestPacket loginRequestPacket = new LoginRequestPacket();
+                   String userName =scanner.nextLine();
+                   loginRequestPacket.setUserName(userName);
+                   loginRequestPacket.setPassword("pwd");
 
+                   channel.writeAndFlush(loginRequestPacket);
+                   waitForLoginResponse();
+               }else {
+                   logger.info("请给你的好友发送消息");
+                   logger.info("第一行是你要发送的信息，第二行是接收人的id");
+                   MessageRequestPacket packet = new MessageRequestPacket();
                    String message = scanner.nextLine();
-                   if (StringUtil.isNullOrEmpty(message)){
-                       packet.setMessage("不要回答！不要回答！不要回答！");
-                   }else {
-                       packet.setMessage(message);
-                   }
-                   ByteBuf byteBuf = PacketCodeC.INSTANCE.encode(channel.alloc(),packet);
-                   channel.writeAndFlush(byteBuf);
+                   String toUserId = scanner.nextLine();
+                   String fromUserId = SessionUtil.getSession(channel).getUserId();
+                   packet.setMessage(message);
+                   packet.setToUserId(toUserId);
+                   packet.setFromUserId(fromUserId);
+                   channel.writeAndFlush(packet);
                }
            }
         }).start();
     }
+
+    public static void waitForLoginResponse() {
+        try {
+            Thread.sleep(1000);
+        }catch (InterruptedException e){
+            logger.error("错误：{}",e);
+        }
+    }
+
+
 }
