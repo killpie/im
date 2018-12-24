@@ -32,9 +32,9 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
         packet.setPassword("root");
 
         //编码
-        ByteBuf byteBuf = PacketCodeC.INSTANCE.encode(ctx.alloc(), packet);
+       // ByteBuf byteBuf = PacketCodeC.INSTANCE.encode(ctx.alloc(), packet);
         //写数据
-        ctx.channel().writeAndFlush(byteBuf);
+        ctx.channel().writeAndFlush(packet);
 
     }
 

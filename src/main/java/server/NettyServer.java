@@ -12,9 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import protocol.codec.PacketCodec;
 import protocol.codec.Spliter;
-import server.handler.FirstServerHandler;
-import server.handler.LoginRequestHandler;
-import server.handler.MessageRequestHandler;
+import server.handler.*;
 
 public class NettyServer {
     private static final Logger logger = LoggerFactory.getLogger(NettyServer.class);
@@ -29,20 +27,22 @@ public class NettyServer {
                 .channel(NioServerSocketChannel.class)
                 .childHandler(new ChannelInitializer<NioSocketChannel>() {
                     @Override
-                    protected void initChannel(NioSocketChannel ch){
+                    protected void initChannel(NioSocketChannel ch) {
                         ch.pipeline().addLast(new Spliter());
-                    //    ch.pipeline().addLast(new FirstServerHandler());
+                        //    ch.pipeline().addLast(new FirstServerHandler());
                         ch.pipeline().addLast(new PacketCodec());
                         ch.pipeline().addLast(new LoginRequestHandler());
+                        ch.pipeline().addLast(new AuthHandler());
+                        ch.pipeline().addLast(new CreateGroupRequestHandler());
                         ch.pipeline().addLast(new MessageRequestHandler());
                     }
                 })
                 .bind(8000)
                 .addListener(new GenericFutureListener<Future<? super Void>>() {
                     public void operationComplete(Future<? super Void> future) throws Exception {
-                        if (future.isSuccess()){
+                        if (future.isSuccess()) {
                             logger.info("服务器启动成功");
-                        }else {
+                        } else {
                             logger.info("服务器启动失败");
                         }
                     }

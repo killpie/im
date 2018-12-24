@@ -43,8 +43,8 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
                 logger.info("登录失败-用户:{}",packet);
             }
 
-            ByteBuf loginRes = PacketCodeC.INSTANCE.encode(ctx.alloc(), res);
-            ctx.channel().writeAndFlush(loginRes);
+           // ByteBuf loginRes = PacketCodeC.INSTANCE.encode(ctx.alloc(), res);
+            ctx.channel().writeAndFlush(res);
         }
 
         if (packet instanceof MessageRequestPacket){
@@ -52,8 +52,8 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
             logger.info("客户端发送的消息:{}",messageRequestPacket);
             MessageResponsePacket messageResponsePacket = new MessageResponsePacket();
             messageResponsePacket.setMessage("就不！就不！就不！");
-            ByteBuf message = PacketCodeC.INSTANCE.encode(ctx.alloc(),messageResponsePacket);
-            ctx.channel().writeAndFlush(message);
+           // ByteBuf message = PacketCodeC.INSTANCE.encode(ctx.alloc(),messageResponsePacket);
+            ctx.channel().writeAndFlush(messageResponsePacket);
         }
 
     }

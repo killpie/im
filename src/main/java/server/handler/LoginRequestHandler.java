@@ -1,17 +1,15 @@
 package server.handler;
 
-import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import protocol.PacketCodeC;
 import protocol.domain.Session;
 import protocol.request.LoginRequestPacket;
 import protocol.response.LoginResponsePacket;
+import util.IDUtil;
 import util.SessionUtil;
 
-import java.util.UUID;
 
 /**
  * @author killpie
@@ -26,7 +24,7 @@ public class LoginRequestHandler extends SimpleChannelInboundHandler<LoginReques
         if (valid(msg)){
             res.setVersion(msg.getVersion());
             res.setUserName(msg.getUserName());
-            res.setUserId(randomUserId());
+            res.setUserId(IDUtil.randomId());
             res.setSuccess(true);
             res.setReason("x");
             logger.info("登录成功-用户:{}",msg);
@@ -45,9 +43,6 @@ public class LoginRequestHandler extends SimpleChannelInboundHandler<LoginReques
     }
 
 
-    private static String randomUserId(){
-        return UUID.randomUUID().toString().split("-")[0];
-    }
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx){

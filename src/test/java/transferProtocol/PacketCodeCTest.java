@@ -9,6 +9,10 @@ import protocol.PacketCodeC;
 import protocol.request.LoginRequestPacket;
 import util.DateUtil;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 /**
  * @author dingzhaolei
  * @date 2018/12/14 19:40
@@ -23,15 +27,21 @@ public class PacketCodeCTest {
         ((LoginRequestPacket) packet).setPassword("123456");
         ((LoginRequestPacket) packet).setUserId("qaz123456");
         ((LoginRequestPacket) packet).setUserName("丁赵雷");
-        ByteBuf byteBuf = packetCodeC.encode(packet);
+        //ByteBuf byteBuf = packetCodeC.encode(packet);
 
-        Packet dePacket = packetCodeC.decode(byteBuf);
+       // Packet dePacket = packetCodeC.decode(byteBuf);
 
-        logger.info("data:{}",dePacket);
+       // logger.info("data:{}",dePacket);
     }
 
     @Test
     public void decode(){
+        List<String> list = new ArrayList<>();
+        list.add("a");
+        list.add("a");
+        list.add("a");
+
+        logger.info(list.stream().collect(Collectors.joining(",")));
 
     }
 }

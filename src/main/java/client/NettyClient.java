@@ -1,27 +1,21 @@
 package client;
 
-import client.handler.FirstClientHandler;
+import client.console.impl.ConsoleCommandManager;
+import client.console.impl.LoginConsoleCommand;
+import client.handler.CreateGroupResponseHandler;
 import client.handler.LoginResponseHandler;
 import client.handler.MessageResponseHandler;
-import handler.ClientHandler;
 import io.netty.bootstrap.Bootstrap;
-import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
-import io.netty.handler.codec.string.StringDecoder;
-import io.netty.handler.codec.string.StringEncoder;
 import io.netty.util.AttributeKey;
-import io.netty.util.concurrent.Future;
-import io.netty.util.concurrent.GenericFutureListener;
-import io.netty.util.internal.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import protocol.PacketCodeC;
+import protocol.Packet;
 import protocol.codec.PacketCodec;
 import protocol.codec.Spliter;
 import protocol.request.LoginRequestPacket;
@@ -37,6 +31,9 @@ public class NettyClient {
 
     private final static int MAX_RETRY = 5;
     private static final Logger logger = LoggerFactory.getLogger(NettyClient.class);
+    private static final String  HOST = "127.0.0.1";
+    private static final int  PORT = 8000;
+
     public static void main(String[] args) throws InterruptedException{
         Bootstrap bootstrap = new Bootstrap();
 
@@ -50,12 +47,13 @@ public class NettyClient {
                         ch.pipeline().addLast(new Spliter());
                         ch.pipeline().addLast(new PacketCodec());
                         ch.pipeline().addLast(new LoginResponseHandler());
+                        ch.pipeline().addLast(new CreateGroupResponseHandler());
                         ch.pipeline().addLast(new MessageResponseHandler());
                     }
                 });
 
 
-        connect(bootstrap, "127.0.0.1", 8000, 5);
+        connect(bootstrap, HOST, PORT, MAX_RETRY);
 
 
     }
@@ -79,41 +77,21 @@ public class NettyClient {
 
     private static void startConsoleThread(Channel channel){
         Scanner scanner = new Scanner(System.in);
+        ConsoleCommandManager consoleCommandManager = new ConsoleCommandManager();
+        LoginConsoleCommand loginConsoleCommand = (LoginConsoleCommand )consoleCommandManager.getConsoleCommandMap().get("login");
         new Thread(()->{
            while (!Thread.interrupted()){
                logger.info("开始启动,线程中断状态{}，登录状态{}",Thread.interrupted(),LoginUtil.hasLogin(channel));
                if (!SessionUtil.hasLogin(channel)){
-                   logger.info("输入用户名登录：");
-                   LoginRequestPacket loginRequestPacket = new LoginRequestPacket();
-                   String userName =scanner.nextLine();
-                   loginRequestPacket.setUserName(userName);
-                   loginRequestPacket.setPassword("pwd");
-
-                   channel.writeAndFlush(loginRequestPacket);
-                   waitForLoginResponse();
+                   loginConsoleCommand.exec(scanner, channel);
                }else {
-                   logger.info("请给你的好友发送消息");
-                   logger.info("第一行是你要发送的信息，第二行是接收人的id");
-                   MessageRequestPacket packet = new MessageRequestPacket();
-                   String message = scanner.nextLine();
-                   String toUserId = scanner.nextLine();
-                   String fromUserId = SessionUtil.getSession(channel).getUserId();
-                   packet.setMessage(message);
-                   packet.setToUserId(toUserId);
-                   packet.setFromUserId(fromUserId);
-                   channel.writeAndFlush(packet);
+                   consoleCommandManager.exec(scanner, channel);
                }
            }
         }).start();
     }
 
-    public static void waitForLoginResponse() {
-        try {
-            Thread.sleep(1000);
-        }catch (InterruptedException e){
-            logger.error("错误：{}",e);
-        }
-    }
+
 
 
 }

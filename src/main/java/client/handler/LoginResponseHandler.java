@@ -25,7 +25,7 @@ public class LoginResponseHandler extends SimpleChannelInboundHandler<LoginRespo
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception{
-        logger.info("客户端连接被关闭channelId:{}", ctx.channel().id());
+        logger.info("连接被关闭 发送此消息的channelId:{}", ctx.channel().id());
     }
 
     @Override
