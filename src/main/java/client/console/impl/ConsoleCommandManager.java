@@ -27,12 +27,16 @@ public class ConsoleCommandManager implements ConsoleCommand {
         consoleCommandMap.put("logout",new LogoutConsoleCommand());
         consoleCommandMap.put("sendToUser",new SendToUserConsoleCommand());
         consoleCommandMap.put("createGroup",new CreateGroupConsoleCommand());
+        consoleCommandMap.put("joinGroup", new JoinGroupConsoleCommand());
+        consoleCommandMap.put("listGroupMembers", new ListGroupMembersConsoleCommand());
+        consoleCommandMap.put("quitGroup", new QuitGroupConsoleCommand());
+
     }
 
     @Override
     public void exec(Scanner scanner, Channel channel) {
 
-        logger.info("现有指令：login，logout，sendToUser，createGroup");
+        logger.info("现有指令：logout，sendToUser，createGroup, joinGroup, listGroupMembers, quitGroup");
         //获取指令
         String command = scanner.nextLine();
 

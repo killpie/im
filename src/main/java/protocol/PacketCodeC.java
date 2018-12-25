@@ -5,12 +5,8 @@ import io.netty.buffer.ByteBufAllocator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import protocol.command.Command;
-import protocol.request.CreateGroupRequestPacket;
-import protocol.request.LoginRequestPacket;
-import protocol.request.MessageRequestPacket;
-import protocol.response.CreateGroupResponsePacket;
-import protocol.response.LoginResponsePacket;
-import protocol.response.MessageResponsePacket;
+import protocol.request.*;
+import protocol.response.*;
 import serialize.Serializer;
 import serialize.impl.JSONSerializerAlgorithm;
 
@@ -39,6 +35,13 @@ public class PacketCodeC {
         packetTypeMap.put(Command.MESSAGE_RESPONSE, MessageResponsePacket.class);
         packetTypeMap.put(Command.CREATE_GROUP_REQUEST, CreateGroupRequestPacket.class);
         packetTypeMap.put(Command.CREATE_GROUP_RESPONSE, CreateGroupResponsePacket.class);
+        packetTypeMap.put(Command.JOIN_GROUP_REQUEST, JoinGroupRequestPacket.class);
+        packetTypeMap.put(Command.JOIN_GROUP_RESPONSE, JoinGroupResponsePacket.class);
+        packetTypeMap.put(Command.QUIT_GROUP_REQUEST, QuitGroupRequestPacket.class);
+        packetTypeMap.put(Command.QUIT_GROUP_RESPONSE, QuitGroupResponsePacket.class);
+        packetTypeMap.put(Command.LIST_GROUP_MEMBERS_REQUEST, ListGroupMembersRequestPacket.class);
+        packetTypeMap.put(Command.LIST_GROUP_MEMBERS_RESPONSE, ListGroupMembersResponsePacket.class);
+
 
         serializerMap = new HashMap<Byte, Serializer>();
         Serializer serializer = new JSONSerializerAlgorithm();

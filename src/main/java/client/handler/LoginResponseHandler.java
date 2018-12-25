@@ -1,19 +1,14 @@
 package client.handler;
 
-import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import protocol.PacketCodeC;
 import protocol.domain.Session;
-import protocol.request.LoginRequestPacket;
 import protocol.response.LoginResponsePacket;
-import util.DateUtil;
-import util.LoginUtil;
 import util.SessionUtil;
 
-import java.util.UUID;
+
 
 /**
  * @author killpie
@@ -30,6 +25,9 @@ public class LoginResponseHandler extends SimpleChannelInboundHandler<LoginRespo
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, LoginResponsePacket msg) throws Exception{
+
+        logger.info("入参 channelId:{},LoginResponsePacket :{}",ctx.channel().id(), msg);
+
         String userId = msg.getUserId();
         String userName = msg.getUserName();
 
@@ -38,7 +36,7 @@ public class LoginResponseHandler extends SimpleChannelInboundHandler<LoginRespo
             logger.info("用户:{} 登录成功 userId:{}",userName, userId);
         }else {
             SessionUtil.unBindSession(ctx.channel());
-            logger.info("用户:{} 登录成功 userId:{}",userName, userId);
+            logger.info("用户:{} 登录失败 userId:{}",userName, userId);
         }
     }
 }

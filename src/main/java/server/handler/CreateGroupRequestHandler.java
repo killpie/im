@@ -26,6 +26,8 @@ public class CreateGroupRequestHandler extends SimpleChannelInboundHandler<Creat
     private static final Logger logger = LoggerFactory.getLogger(CreateGroupRequestHandler.class);
 
     protected void channelRead0(ChannelHandlerContext ctx, CreateGroupRequestPacket msg) throws Exception{
+        logger.info("入参 channelId:{},CreateGroupRequestPacket :{}",ctx.channel().id(), msg);
+
         List<String> userIdList = msg.getUserIdList();
 
         List<String> userNameList = new ArrayList<>();
@@ -33,11 +35,12 @@ public class CreateGroupRequestHandler extends SimpleChannelInboundHandler<Creat
         //1.创建一个channel 分组
         ChannelGroup channelGroup =new DefaultChannelGroup(userIdList.stream().collect(Collectors.joining(",")) , ctx.executor());
         //2. 筛选出待加入群聊的channel和userName
-
+        List<Session> sessionList = new ArrayList<>();
         for (String userId:userIdList
              ) {
             Channel channel = SessionUtil.getChannel(userId);
             if (channel != null){
+                sessionList.add(SessionUtil.getSession(channel));
                 channelGroup.add(channel);
                 String userName = SessionUtil.getSession(channel).getUserName();
                 userNameList.add(userName);
@@ -45,11 +48,15 @@ public class CreateGroupRequestHandler extends SimpleChannelInboundHandler<Creat
         }
 
 
+
+
         CreateGroupResponsePacket createGroupResponsePacket = new CreateGroupResponsePacket();
         createGroupResponsePacket.setGroupId(IDUtil.randomId());
         createGroupResponsePacket.setSuccess(true);
         createGroupResponsePacket.setUserNameList(userNameList);
 
+        SessionUtil.addMembers(createGroupResponsePacket.getGroupId(), sessionList);
+        SessionUtil.bindChannelGroup(createGroupResponsePacket.getGroupId(), channelGroup);
         channelGroup.writeAndFlush(createGroupResponsePacket);
 
         logger.info("群创建成功，id 为[{}] ", createGroupResponsePacket.getGroupId());

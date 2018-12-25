@@ -19,7 +19,8 @@ public class MessageRequestHandler extends SimpleChannelInboundHandler<MessageRe
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, MessageRequestPacket msg) throws Exception{
-        logger.info("客户端发送的消息:{}",msg);
+        logger.info("入参 channelId:{},MessageRequestPacket :{}",ctx.channel().id(), msg);
+
         MessageResponsePacket messageResponsePacket = new MessageResponsePacket();
         String fromUserId = msg.getFromUserId();
         messageResponsePacket.setMessage(String.format("谢谢 userId:%s 给我发送的message:%s", fromUserId, msg.getMessage()));

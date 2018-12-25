@@ -20,6 +20,9 @@ public class LoginRequestHandler extends SimpleChannelInboundHandler<LoginReques
     private static final Logger logger = LoggerFactory.getLogger(LoginRequestHandler.class);
 
     protected void channelRead0(ChannelHandlerContext ctx, LoginRequestPacket msg) throws Exception{
+        logger.info("入参 channelId:{},LoginRequestPacket :{}",ctx.channel().id(), msg);
+
+
         LoginResponsePacket res = new LoginResponsePacket();
         if (valid(msg)){
             res.setVersion(msg.getVersion());

@@ -13,10 +13,10 @@ import server.handler.CreateGroupRequestHandler;
  **/
 public class CreateGroupResponseHandler extends SimpleChannelInboundHandler<CreateGroupResponsePacket> {
 
-    private static final Logger logger = LoggerFactory.getLogger(CreateGroupRequestHandler.class);
+    private static final Logger logger = LoggerFactory.getLogger(CreateGroupResponseHandler.class);
 
     protected void channelRead0(ChannelHandlerContext ctx, CreateGroupResponsePacket msg) throws Exception{
-
+        logger.info("入参 channelId:{},CreateGroupResponsePacket  :{}",ctx.channel().id(), msg);
         logger.info("群创建成功，id 为[{}] ", msg.getGroupId());
         logger.info("群里面有：{}" , msg.getUserNameList() );
     }

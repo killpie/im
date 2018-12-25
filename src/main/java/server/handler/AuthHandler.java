@@ -22,6 +22,7 @@ public class AuthHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+        logger.info("入参 channelId:{},Object :{}",ctx.channel().id(), msg);
         if (!SessionUtil.hasLogin(ctx.channel())){
             ctx.channel().close();
         }else {

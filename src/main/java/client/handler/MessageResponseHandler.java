@@ -16,6 +16,7 @@ public class MessageResponseHandler extends SimpleChannelInboundHandler<MessageR
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, MessageResponsePacket msg) throws Exception{
+        logger.info("入参 channelId:{},MessageResponsePacket :{}",ctx.channel().id(), msg);
         logger.info("收到服务端发送的消息:{}",msg);
     }
 }

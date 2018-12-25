@@ -2,9 +2,7 @@ package client;
 
 import client.console.impl.ConsoleCommandManager;
 import client.console.impl.LoginConsoleCommand;
-import client.handler.CreateGroupResponseHandler;
-import client.handler.LoginResponseHandler;
-import client.handler.MessageResponseHandler;
+import client.handler.*;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
@@ -49,6 +47,10 @@ public class NettyClient {
                         ch.pipeline().addLast(new LoginResponseHandler());
                         ch.pipeline().addLast(new CreateGroupResponseHandler());
                         ch.pipeline().addLast(new MessageResponseHandler());
+                        ch.pipeline().addLast(new JoinGroupResponseHandler());
+                        ch.pipeline().addLast(new ListGroupMembersResponseHandler());
+                        ch.pipeline().addLast(new QuitGroupResponseHandler());
+
                     }
                 });
 
