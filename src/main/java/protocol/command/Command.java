@@ -81,4 +81,14 @@ public interface Command {
      */
     Byte GROUP_MESSAGE_RESPONSE = 16;
 
+    /**
+     * 心跳检测请求
+     */
+    Byte HEARTBEAT_REQUEST = 17;
+
+    /**
+     * 心跳检测响应
+     */
+    Byte HEARTBEAT_RESPONSE = 18;
+
 }

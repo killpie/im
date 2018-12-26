@@ -3,6 +3,7 @@ package client;
 import client.console.impl.ConsoleCommandManager;
 import client.console.impl.LoginConsoleCommand;
 import client.handler.*;
+import handler.IMIdleStateHandler;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
@@ -39,6 +40,7 @@ public class NettyClient {
                 .handler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     protected void initChannel(SocketChannel ch){
+                        ch.pipeline().addLast(new IMIdleStateHandler());
                         ch.pipeline().addLast(new Spliter());
                         ch.pipeline().addLast(PacketCodecHandler.INSTANCE);
                         ch.pipeline().addLast(LoginResponseHandler.INSTANCE);
@@ -48,6 +50,9 @@ public class NettyClient {
                         ch.pipeline().addLast(ListGroupMembersResponseHandler.INSTANCE);
                         ch.pipeline().addLast(QuitGroupResponseHandler.INSTANCE);
                         ch.pipeline().addLast(GroupMessageResponseHandler.INSTANCE);
+
+                        //心跳定时器
+                        ch.pipeline().addLast(new HeartBeatTimerHandler());
                     }
                 });
 
