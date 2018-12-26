@@ -5,19 +5,19 @@ import protocol.Packet;
 import protocol.command.Command;
 
 /**
- * @author killpie
- * @date 2018/12/15 23:01
+ * @author dingzhaolei
+ * @date 2018/12/26 14:56
  **/
 @Data
-public class MessageRequestPacket extends Packet {
-    private String message;
-    private String toUserId;
-    private String toUserName;
+public class GroupMessageRequestPacket extends Packet {
+
     private String fromUserId;
     private String fromUserName;
+    private String groupId;
+    private String message;
 
     @Override
     public Byte getCommand() {
-        return Command.MESSAGE_REQUEST;
+        return Command.GROUP_MESSAGE_REQUEST;
     }
 }
