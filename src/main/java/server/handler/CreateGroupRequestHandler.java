@@ -1,6 +1,8 @@
 package server.handler;
 
+import client.handler.CreateGroupResponseHandler;
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.group.ChannelGroup;
@@ -21,9 +23,10 @@ import java.util.stream.Collectors;
  * @author dingzhaolei
  * @date 2018/12/24 14:56
  **/
+@ChannelHandler.Sharable
 public class CreateGroupRequestHandler extends SimpleChannelInboundHandler<CreateGroupRequestPacket> {
-
     private static final Logger logger = LoggerFactory.getLogger(CreateGroupRequestHandler.class);
+    public static final CreateGroupRequestHandler INSTANCE = new CreateGroupRequestHandler();
 
     protected void channelRead0(ChannelHandlerContext ctx, CreateGroupRequestPacket msg) throws Exception{
         logger.info("入参 channelId:{},CreateGroupRequestPacket :{}",ctx.channel().id(), msg);

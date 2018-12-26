@@ -1,5 +1,6 @@
 package server.handler;
 
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.group.ChannelGroup;
@@ -15,9 +16,10 @@ import util.SessionUtil;
  * @author dingzhaolei
  * @date 2018/12/25 14:53
  **/
+@ChannelHandler.Sharable
 public class QuitGroupRequestHandler extends SimpleChannelInboundHandler<QuitGroupRequestPacket> {
-
     private static final Logger logger = LoggerFactory.getLogger(QuitGroupRequestHandler.class);
+    public static final QuitGroupRequestHandler INSTANCE = new QuitGroupRequestHandler();
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, QuitGroupRequestPacket msg) throws Exception {

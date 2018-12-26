@@ -1,5 +1,6 @@
 package client.handler;
 
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import org.slf4j.Logger;
@@ -11,9 +12,10 @@ import protocol.response.QuitGroupResponsePacket;
  * @author dingzhaolei
  * @date 2018/12/25 15:35
  **/
+@ChannelHandler.Sharable
 public class QuitGroupResponseHandler extends SimpleChannelInboundHandler<QuitGroupResponsePacket> {
-
     private static final Logger logger = LoggerFactory.getLogger(QuitGroupResponseHandler.class);
+    public static final QuitGroupResponseHandler INSTANCE = new QuitGroupResponseHandler();
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, QuitGroupResponsePacket msg) throws Exception {

@@ -1,5 +1,6 @@
 package client.handler;
 
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import org.slf4j.Logger;
@@ -14,9 +15,10 @@ import util.SessionUtil;
  * @author killpie
  * @date 2018/12/16 10:51
  **/
+@ChannelHandler.Sharable
 public class LoginResponseHandler extends SimpleChannelInboundHandler<LoginResponsePacket> {
-
     private static final Logger logger = LoggerFactory.getLogger(LoginResponseHandler.class);
+    public static final LoginResponseHandler INSTANCE = new LoginResponseHandler();
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception{

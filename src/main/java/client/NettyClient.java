@@ -13,11 +13,8 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.util.AttributeKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import protocol.Packet;
-import protocol.codec.PacketCodec;
+import protocol.codec.PacketCodecHandler;
 import protocol.codec.Spliter;
-import protocol.request.LoginRequestPacket;
-import protocol.request.MessageRequestPacket;
 import util.LoginUtil;
 import util.SessionUtil;
 
@@ -43,14 +40,14 @@ public class NettyClient {
                     @Override
                     protected void initChannel(SocketChannel ch){
                         ch.pipeline().addLast(new Spliter());
-                        ch.pipeline().addLast(new PacketCodec());
-                        ch.pipeline().addLast(new LoginResponseHandler());
-                        ch.pipeline().addLast(new CreateGroupResponseHandler());
-                        ch.pipeline().addLast(new MessageResponseHandler());
-                        ch.pipeline().addLast(new JoinGroupResponseHandler());
-                        ch.pipeline().addLast(new ListGroupMembersResponseHandler());
-                        ch.pipeline().addLast(new QuitGroupResponseHandler());
-                        ch.pipeline().addLast(new GroupMessageResponseHandler());
+                        ch.pipeline().addLast(PacketCodecHandler.INSTANCE);
+                        ch.pipeline().addLast(LoginResponseHandler.INSTANCE);
+                        ch.pipeline().addLast(CreateGroupResponseHandler.INSTANCE);
+                        ch.pipeline().addLast(MessageResponseHandler.INSTANCE);
+                        ch.pipeline().addLast(JoinGroupResponseHandler.INSTANCE);
+                        ch.pipeline().addLast(ListGroupMembersResponseHandler.INSTANCE);
+                        ch.pipeline().addLast(QuitGroupResponseHandler.INSTANCE);
+                        ch.pipeline().addLast(GroupMessageResponseHandler.INSTANCE);
                     }
                 });
 
